@@ -1,0 +1,21 @@
+{
+  "name": "accountability_editor",
+  "version": "1.0.0",
+  "description": "Application to allow easy editing of AC Accountability rosters",
+  "main": "src/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://zachThePerson@bitbucket.org/zachThePerson/accountability_editor.git"
+  },
+    "scripts": {
+    "start": "electron ."
+  },
+  "author": "Zach \"Hixxy\" Hixson",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^6.0.1"
+  },
+  "devDependencies": {
+    "electron-packager": "^14.0.4"
+  }
+}
