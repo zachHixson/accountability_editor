@@ -1,0 +1,10 @@
+#studentList{
+    width: 100%;
+}
+
+.border_drag{
+    display: block;
+    width: 2px;
+    height: 100%;
+    background: black;
+}

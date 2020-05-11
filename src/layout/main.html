@@ -3,10 +3,29 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>Accountability Editor</title> 
+        <title>Accountability Editor</title>
+        <script src="Spreadsheet.js"></script>
+        <script>
+            window.onload = () => {
+                createSpreadsheet();
+            }
+        </script>
+        <link rel="stylesheet" href="main.css">
     </head>
 
     <body>
-        Working
+        <table id="studentList">
+            <tr>
+                <th>
+                    First Name
+                    <div class="border_drag"></div>
+                </th>
+                <th>
+                    Last Name
+                    <div class="border_drag"></div>
+                </th>
+                <th>Info</th>
+            </tr>
+        </table>
     </body>
 </html>

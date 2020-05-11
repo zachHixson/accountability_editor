@@ -19,6 +19,17 @@ app.on('ready', function(){
                 {label:"Save"},
                 {label:"Exit"}
             ]
+        },
+        {
+            label: 'debug',
+            submenu: [
+                {
+                    label: "Open console",
+                    click() {
+                        mainWindow.webContents.openDevTools();
+                    }
+                }
+            ]
         }
     ]);
 
