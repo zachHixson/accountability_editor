@@ -10,6 +10,20 @@ const {app, BrowserWindow, Menu, ipcMain} = electron;
 let mainWindow;
 
 app.on('ready', function(){
+    let menu = Menu.buildFromTemplate([
+        {
+            label: 'File',
+            submenu: [
+                {label:"New"},
+                {label:"Open"},
+                {label:"Save"},
+                {label:"Exit"}
+            ]
+        }
+    ]);
+
+    Menu.setApplicationMenu(menu);
+
     mainWindow = new BrowserWindow({
         webPreferences: {
             nodeIntegration: true
@@ -19,5 +33,5 @@ app.on('ready', function(){
 
     mainWindow.on('closed', function(){
         app.quit();
-    })
+    });
 })
