@@ -1,25 +1,33 @@
 const fs = require('fs');
 const path = require('path');
+const remote = require('electron').remote;
 const {ipcRenderer} = require('electron');
+const app = remote.app;
+
+let tempPath = path.join(app.getPath("appData"), "accountability_editor/tempSave.json");
+
+class Student {
+    constructor(fName = '', lName = '', allergies = ''){
+        this.fName = fName;
+        this.lName = lName;
+        this.allergies = allergies;
+    }
+}
 
 function createSpreadsheet(){
     let table = document.getElementById("studentList");
-    let debug_list = readDebugList();
-
-    refreshList(debug_list);
+    readTempList()
 }
 
-function readDebugList(){
-    let output = {};
-
-    output = JSON.parse(fs.readFileSync("./src/layout/debugList.json", (err, data) => {
+function readTempList(){
+    fs.readFile(tempPath, 'utf8', (err, data) => {
         if (err){
             console.log(err);
             return;
         }
-    }))
 
-    return output;
+        refreshList(JSON.parse(data));
+    })
 }
 
 function refreshList(nameList){
@@ -77,6 +85,7 @@ function insertRow(event){
     let table = document.getElementById("studentList");
     table.appendChild(createRow());
     assignRowIds();
+    saveTemp();
 }
 
 function deleteRow(event){
@@ -84,9 +93,38 @@ function deleteRow(event){
     let rowID = row.getAttribute("rowID");
     document.getElementById("studentList").deleteRow(rowID);
     assignRowIds();
+    saveTemp();
+}
+
+function getTableData(){
+    let table = document.getElementById("studentList");
+    let students = [];
+
+    for (let i = 1; i < table.rows.length; i++){
+        let childNodes = table.rows[i].childNodes;
+        students.push(new Student(
+            childNodes[0].firstChild.value,
+            childNodes[1].firstChild.value,
+            childNodes[2].firstChild.value
+        ));
+    }
+
+    return students;
+}
+
+function saveTemp(){
+    let data = getTableData();
+
+    fs.writeFile(tempPath, JSON.stringify(data), (err) => {
+        if (err){
+            console.log(err);
+            return;
+        }
+    })
 }
 
 ipcRenderer.on('new_roster_opened', (event, data) => {
     let list = JSON.parse(data);
     refreshList(list);
-})
+    saveTemp();
+});
