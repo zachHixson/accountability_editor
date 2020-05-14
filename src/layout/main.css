@@ -16,6 +16,10 @@
     border-right: 1px solid black;
 }
 
+#studentList th:last-of-type{
+    border-right: none;
+}
+
 #studentList input{
     box-sizing: border-box;
     font-size:  medium;
@@ -31,17 +35,10 @@
     width:25%;
 }
 
-.border_drag{
-    content: "";
-    float: right;
-    width: 5px;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.1);
-}
-
 input{
     width:100%;
     height: 100%;
+    border: 1px solid gray;
 }
 
 #addName{
@@ -53,9 +50,33 @@ input{
     border-radius: 10px;
     margin: 3px;
     vertical-align: middle;
+    border: none;
+    outline: none;
 }
 
 #addName:hover{
     background: #B38507;
     cursor: pointer;
+}
+
+.delete_cell{
+    display: table-cell;
+    text-align: center;
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+    width: 2em;
+    border-bottom: 2px solid grey;
+    border-top: 1px solid gray;
+    background: #FFC524;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.delete_cell:hover{
+    cursor: pointer;
+    background: #B38507;
 }

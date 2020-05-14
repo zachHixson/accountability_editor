@@ -3,9 +3,10 @@ Main JS File
 */
 
 const electron = require('electron');
+const fs = require('fs');
 const path = require('path');
 
-const {app, BrowserWindow, Menu, ipcMain} = electron;
+const {app, BrowserWindow, Menu, dialog, ipcMain} = electron;
 
 let mainWindow;
 
@@ -15,7 +16,12 @@ app.on('ready', function(){
             label: 'File',
             submenu: [
                 {label:"New"},
-                {label:"Open"},
+                {
+                    label:"Open",
+                    click(){
+                        openRosterDialog();
+                    }
+                },
                 {label:"Save"},
                 {label:"Exit"}
             ]
@@ -46,3 +52,20 @@ app.on('ready', function(){
         app.quit();
     });
 })
+
+function openRosterDialog(){
+    let filePath;
+
+    dialog.showOpenDialog({properties: ['openFile']})
+    .then((data) => {filePath = data.filePaths[0]})
+    .then((data) => {
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err){
+                console.log(err);
+                return;
+            }
+
+            mainWindow.send("new_roster_opened", data);
+        });
+    });
+}
