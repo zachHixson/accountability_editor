@@ -27,8 +27,11 @@
                 </th>
             </tr>
             <tr>
-                <td class="searchcell" colspan="4">
-                    <input id="searchBox" type="text" placeholder="Search" />
+                <td colspan="4">
+                    <div class="searchCell">
+                        <input id="searchBox" type="text" placeholder="Search" oninput="updateSearch()" />
+                        <button id="searchClear" onclick="clearSearch()">Clear Search</button>
+                    </div>
                 </td>
             </tr>
         </table>

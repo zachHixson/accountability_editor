@@ -94,6 +94,22 @@ input{
     background: var(--gray-low);
 }
 
+.searchCell{
+    display: flex;
+    flex-wrap: nowrap;
+    background: blue;
+}
+
 #searchBox{
     background: #ededed;
+}
+
+#searchClear{
+    width: 10em;
+    background: var(--gray-high);
+    border: 1px solid gray;;
+}
+
+#searchClear:hover{
+    background: var(--gray-low);
 }
