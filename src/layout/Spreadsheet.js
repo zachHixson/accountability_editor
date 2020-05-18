@@ -34,7 +34,6 @@ function readTempList(){
 
 function refreshList(nameList){
     let table = document.getElementById("studentList");
-    let totalDeleted = 0;
 
     while (table.rows.length > START_ROW){
         table.deleteRow(START_ROW);
@@ -107,7 +106,7 @@ function getTableData(){
     let table = document.getElementById("studentList");
     let students = [];
 
-    for (let i = 1; i < table.rows.length; i++){
+    for (let i = START_ROW; i < table.rows.length; i++){
         let childNodes = table.rows[i].childNodes;
         students.push(new Student(
             childNodes[0].firstChild.value,
@@ -120,7 +119,7 @@ function getTableData(){
 }
 
 function saveTemp(){
-    let data = {};//getTableData();
+    let data = getTableData();
 
     fs.writeFile(tempPath, JSON.stringify(data), (err) => {
         if (err){
@@ -135,3 +134,83 @@ ipcRenderer.on('new_roster_opened', (event, data) => {
     refreshList(list);
     saveTemp();
 });
+
+function sortByFirst(elem){
+    sort(elem, (a, b) => {
+        aFname = a.fName.toUpperCase();
+        bFname = b.fName.toUpperCase();
+        aLname = a.lName.toUpperCase();
+        bLname = b.lName.toUpperCase();
+
+        if (aFname < bFname){
+            return -1;
+        }
+        else if (aFname > bFname){
+            return 1;
+        }
+        else{
+            if (aLname < bLname){
+                return -1;
+            }
+            else if (aLname > bLname){
+                return 1;
+            }
+            else{
+                return 0;
+            }
+        }
+    });
+}
+
+function sortByLast(elem){
+    sort(elem, (a, b) => {
+        aFname = a.fName.toUpperCase();
+        bFname = b.fName.toUpperCase();
+        aLname = a.lName.toUpperCase();
+        bLname = b.lName.toUpperCase();
+
+        if (aLname < bLname){
+            return -1;
+        }
+        else if (aLname > bLname){
+            return 1;
+        }
+        else{
+            if (aFname < bFname){
+                return -1;
+            }
+            else if (aFname > bFname){
+                return 1;
+            }
+            else{
+                return 0;
+            }
+        }
+    });
+}
+
+function sort(elem, conditionFunc){
+    let curIndicator = elem.getElementsByClassName("sortIndicator")[0];
+    let curSortDirection = curIndicator.getAttribute("sortOrder");
+    let sortIndicators = document.getElementsByClassName("sortIndicator");
+    let list = getTableData();
+    list.sort(conditionFunc);
+
+    //set all sort indicators
+    for (let i = 0; i < sortIndicators.length; i++){
+        sortIndicators[i].innerHTML = '';
+        sortIndicators[i].setAttribute("sortOrder", "");
+    }
+
+    if (curSortDirection === "desc"){
+        curIndicator.innerHTML = "⯅";
+        curIndicator.setAttribute("sortOrder", "asc");
+        list.reverse();
+    }
+    else{
+        curIndicator.innerHTML = "⯆";
+        curIndicator.setAttribute("sortOrder", "desc");
+    }
+
+    refreshList(list);
+}

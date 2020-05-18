@@ -21,6 +21,11 @@
     height: 50px;
     vertical-align: middle;
     border-right: 1px solid black;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #studentList th:last-of-type{
@@ -87,4 +92,8 @@ input{
 .delete_cell:hover{
     cursor: pointer;
     background: var(--gray-low);
+}
+
+#searchBox{
+    background: #ededed;
 }

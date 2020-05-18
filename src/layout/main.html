@@ -16,16 +16,18 @@
     <body>
         <table id="studentList">
             <tr>
-                <th>
-                    First Name
+                <th onclick="sortByFirst(this)">
+                    First Name <span class="sortIndicator"></span>
                 </th>
-                <th>
-                    Last Name
+                <th onclick="sortByLast(this)">
+                    Last Name  <span class="sortIndicator"></span>
                 </th>
-                <th colspan="2">Info</th>
+                <th colspan="2">
+                    Info  <span class="sortIndicator"></span>
+                </th>
             </tr>
             <tr>
-                <td class="searchcell" colspan="3">
+                <td class="searchcell" colspan="4">
                     <input id="searchBox" type="text" placeholder="Search" />
                 </td>
             </tr>
