@@ -1,3 +1,10 @@
+:root{
+    --highlight-color: #FFB44C;
+    --selected: #4DBAFF;
+    --gray-high: #cfcfcf;
+    --gray-low: #a1a1a1;
+}
+
 * {
     padding: 0px;
     margin: 0px;
@@ -10,7 +17,7 @@
 }
 
 #studentList th{
-    background: #FFC524;
+    background: var(--highlight-color);
     height: 50px;
     vertical-align: middle;
     border-right: 1px solid black;
@@ -28,7 +35,7 @@
 }
 
 #studentList input:focus{
-    background: #63AFFF;
+    background: var(--selected);
 }
 
 .nameField{
@@ -42,7 +49,7 @@ input{
 }
 
 #addName{
-    background: #FFC524;
+    background: var(--highlight-color);
     font-size: 2em;
     width: 1.3em;
     height: 1.3em;
@@ -68,15 +75,16 @@ input{
     width: 2em;
     border-bottom: 2px solid grey;
     border-top: 1px solid gray;
-    background: #FFC524;
+    background: var(--gray-high);
     -webkit-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    color: Black;
 }
 
 .delete_cell:hover{
     cursor: pointer;
-    background: #B38507;
+    background: var(--gray-low);
 }

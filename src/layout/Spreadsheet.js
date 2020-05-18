@@ -4,6 +4,8 @@ const remote = require('electron').remote;
 const {ipcRenderer} = require('electron');
 const app = remote.app;
 
+const START_ROW = 2;
+
 let tempPath = path.join(app.getPath("appData"), "accountability_editor/tempSave.json");
 
 class Student {
@@ -32,6 +34,11 @@ function readTempList(){
 
 function refreshList(nameList){
     let table = document.getElementById("studentList");
+    let totalDeleted = 0;
+
+    while (table.rows.length > START_ROW){
+        table.deleteRow(START_ROW);
+    }
 
     for (let i = 0; i < nameList.length; i++){
         let row = createRow(
@@ -76,7 +83,7 @@ function createRow(fName = "", lName = "", info = ""){
 function assignRowIds(){
     let table = document.getElementById("studentList");
 
-    for (let i = 0; i < table.rows.length; i++){
+    for (let i = START_ROW; i < table.rows.length; i++){
         table.rows[i].setAttribute("rowID", i);
     }
 }
@@ -113,7 +120,7 @@ function getTableData(){
 }
 
 function saveTemp(){
-    let data = getTableData();
+    let data = {};//getTableData();
 
     fs.writeFile(tempPath, JSON.stringify(data), (err) => {
         if (err){

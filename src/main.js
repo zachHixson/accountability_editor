@@ -67,5 +67,6 @@ function openRosterDialog(){
 
             mainWindow.send("new_roster_opened", data);
         });
-    });
+    })
+    .catch((err) => console.log(err));
 }
