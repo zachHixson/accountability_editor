@@ -6,11 +6,12 @@ const electron = require('electron');
 const fs = require('fs');
 const path = require('path');
 
-const {app, BrowserWindow, Menu, dialog, ipcMain} = electron;
+const {app, BrowserWindow, Menu, dialog, ipcMain, nativeImage} = electron;
 
 let mainWindow;
 
 app.on('ready', function(){
+    let image = nativeImage.createFromPath(__dirname + '/img/logo_no-outline.png');
     let menu = Menu.buildFromTemplate([
         {
             label: 'File',
@@ -59,11 +60,13 @@ app.on('ready', function(){
     ]);
 
     Menu.setApplicationMenu(menu);
+    image.setTemplateImage(true);
 
     mainWindow = new BrowserWindow({
         webPreferences: {
             nodeIntegration: true
-        }
+        },
+        icon: image
     })
     mainWindow.loadFile("./src/layout/main.html");
 
