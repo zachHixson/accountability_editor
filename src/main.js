@@ -15,15 +15,34 @@ app.on('ready', function(){
         {
             label: 'File',
             submenu: [
-                {label:"New"},
+                {
+                    label:"New",
+                    accelerator: "CmdOrCtrl + N",
+                    click(){
+                        clearRosterDialog();
+                    }
+                },
                 {
                     label:"Open",
+                    accelerator: "CmdOrCtrl + O",
                     click(){
                         openRosterDialog();
                     }
                 },
-                {label:"Save"},
-                {label:"Exit"}
+                {
+                    label:"Save",
+                    accelerator: "CmdOrCtrl + S",
+                    click() {
+                        openSaveDialog();
+                    }
+                },
+                {
+                    label:"Quit",
+                    accelerator: "CmdOrCtrl + Q",
+                    click(){
+                        app.quit();
+                    }
+                }
             ]
         },
         {
@@ -53,6 +72,20 @@ app.on('ready', function(){
     });
 })
 
+function clearRosterDialog(){
+    let response = dialog.showMessageBox({
+        noLink: true,
+        buttons: ["New", "Cancel"],
+        message: "Warning: This will create a a new accountability list. All unsaved changes will be lost"
+    }, (responses) => {
+        if (responses == 0){
+            mainWindow.send("new_roster");
+            console.log("event");
+        }
+        
+    });
+}
+
 function openRosterDialog(){
     let filePath;
 
@@ -70,3 +103,20 @@ function openRosterDialog(){
     })
     .catch((err) => console.log(err));
 }
+
+function openSaveDialog(){
+    dialog.showSaveDialog({properties: ['saveFile'], filters: [{name: "JSON file", extensions: ["json"]}]})
+    .then((data) => {
+        if (!data.canceled){
+            mainWindow.send("request_save_data", data.filePath);
+        }
+    });
+}
+
+ipcMain.on('save_file', (event, data) => {
+    fs.writeFile(data.filePath, data.contents, (err) => {
+        if (err){
+            console.log(err);
+        }
+    });
+})

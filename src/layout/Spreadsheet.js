@@ -172,11 +172,23 @@ function saveTemp(){
     })
 }
 
+ipcRenderer.on('new_roster', (event) => {
+    studentList = [];
+    refreshList(studentList);
+})
+
 ipcRenderer.on('new_roster_opened', (event, data) => {
     loadJsonList(data)
     refreshList(studentList);
     saveTemp();
 });
+
+ipcRenderer.on('request_save_data', (event, filePath) => {
+    ipcRenderer.send('save_file', {
+        contents: listOutput(),
+        filePath
+    })
+})
 
 function sortByFirst(elem){
     sort(elem, (a, b) => {
