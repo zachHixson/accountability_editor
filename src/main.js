@@ -85,7 +85,6 @@ function clearRosterDialog(){
             mainWindow.send("new_roster");
             console.log("event");
         }
-        
     });
 }
 
@@ -117,9 +116,37 @@ function openSaveDialog(){
 }
 
 ipcMain.on('save_file', (event, data) => {
-    fs.writeFile(data.filePath, data.contents, (err) => {
-        if (err){
-            console.log(err);
-        }
-    });
+    if (data.containsEmpty){
+        let response = dialog.showMessageBox({
+            noLink: true,
+            buttons: ["Save", "Remove Empty", "Cancel"],
+            message: "Warning: The list you are about to save contains student entries without first or last name. Do you want to continue?"
+        }, (responses) => {
+            let save = false;
+            if (responses == 0){
+                save = true;
+            }
+            else if(responses == 1){
+                let list = JSON.parse(data.contents);
+                let culledList = list.filter(student => student.fName.trim().length > 0 && student.lName.trim().length > 0);
+                data.contents = JSON.stringify(culledList);
+                save = true;
+            }
+
+            if (save){
+                fs.writeFile(data.filePath, data.contents, (err) => {
+                    if (err){
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    }
+    else{
+        fs.writeFile(data.filePath, data.contents, (err) => {
+            if (err){
+                console.log(err);
+            }
+        });
+    }
 })

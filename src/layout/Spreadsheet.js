@@ -63,7 +63,7 @@ function listOutput(){
         outList.push(studentList[i].getOutput());
     }
 
-    return JSON.stringify(outList);
+    return outList;
 }
 
 function refreshList(nameList){
@@ -164,7 +164,7 @@ function deleteRow(event){
 }
 
 function saveTemp(){
-    fs.writeFile(tempPath, listOutput(), (err) => {
+    fs.writeFile(tempPath, JSON.stringify(listOutput()), (err) => {
         if (err){
             console.log(err);
             return;
@@ -184,11 +184,16 @@ ipcRenderer.on('new_roster_opened', (event, data) => {
 });
 
 ipcRenderer.on('request_save_data', (event, filePath) => {
+    let saveList = listOutput();
+    let stringList = JSON.stringify(saveList);
+    let emptyNames = saveList.filter(student => student.fName.trim().length <= 0 || student.lName.trim().length <= 0);
+
     ipcRenderer.send('save_file', {
-        contents: listOutput(),
-        filePath
+        contents: stringList,
+        filePath,
+        containsEmpty: (emptyNames.length > 0)
     })
-})
+});
 
 function sortByFirst(elem){
     sort(elem, (a, b) => {
