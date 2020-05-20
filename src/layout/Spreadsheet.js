@@ -88,6 +88,8 @@ function refreshList(nameList){
         table.appendChild(row);
         nameList[i].rowID = i;
     }
+
+    document.getElementById("studentCount").innerHTML = studentList.length;
 }
 
 function createRow(fName = "", lName = "", info = "", id = 0){

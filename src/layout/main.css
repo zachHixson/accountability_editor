@@ -113,3 +113,7 @@ input{
 #searchClear:hover{
     background: var(--gray-low);
 }
+
+.tableInfo{
+    font-style: italic;
+}
