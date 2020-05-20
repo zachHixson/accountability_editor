@@ -130,7 +130,7 @@ function createRow(fName = "", lName = "", info = "", id = 0){
         let elem = event.path[0];
         let id = elem.getAttribute("studentID");
         let student = studentList.filter(student => student.id == id);
-        updateStudent(id, elem.value);
+        updateStudent(id, null, null, elem.value);
         saveTemp();
     });
     deleteCell.addEventListener("click", deleteRow);
@@ -147,76 +147,47 @@ function insertRow(event){
 }
 
 function deleteRow(event){
-    let row = event.path[1]
+    let row = event.path[1];
     let studentID = row.getAttribute("studentID");
     deleteStudent(studentID);
 }
 
 function insertStudent(student = new Student()){
-    undoStore.commit(
-        'insert',
-        {student},
-        (data) => {
-            studentList.push(data.student);
-        },
-        (data) => {
-            deleteStudent(data.student.id);
-        }
-    );
+    undoStore.commit('insert', studentList);
+    studentList.push(data.student);
     refreshList(studentList);
     saveTemp();
 }
 
 function deleteStudent(id){
-    undoStore.commit(
-        'delete',
-        {id, curStudent: studentList.filter(student => student.id == id)[0]},
-        (data) => {
-            studentList.map((student, idx) => {
-                if (student.id == data.id){
-                    studentList.splice(idx, 1);
-                }
-            });
-        },
-        (data) => {
-            console.log(data.curStudent)
-            insertStudent(data.curStudent);
+    undoStore.commit('delete', studentList);
+    studentList.map((student, idx) => {
+        if (student.id == data.id){
+            studentList.splice(idx, 1);
         }
-    );
+    });
     refreshList(studentList);
     saveTemp();
 }
 
 function updateStudent(id, fName, lName, info){
-    undoStore.commit(
-        'update',
-        {
-            id,
-            oldStudent: studentList.filter(student => student.id == id)[0],
-            fName, lName, info
-        },
-        (data) => {
-            let modStudent = studentList.filter(student => student.id == data.id)[0];
+    let modStudent = studentList.filter(student => student.id == data.id)[0];
+    undoStore.commit('update', studentList);
 
-            if (fName != null && fName.length > 0){
-                modStudent.fName = fName;
-            }
+    if (fName != null && fName.length > 0){
+        modStudent.fName = fName;
+    }
 
-            if (lName != null && lName.length > 0){
-                modStudent.lName = lName;
-            }
+    if (lName != null && lName.length > 0){
+        modStudent.lName = lName;
+    }
 
-            if (info != null && info.length > 0){
-                modStudent.info = info;
-            }
-        },
-        (data) => {
-            let modStudent = studentList.filter(student => student.id == data.id)[0];
-            modStudent.fName = data.oldStudent.fName;
-            modStudent.lName = data.oldStudent.lName;
-            modStudent.info = data.oldStudent.info;
-        }
-    );
+    if (info != null && info.length > 0){
+        modStudent.info = info;
+    }
+
+    refreshList(studentList);
+    saveTemp();
 }
 
 function saveTemp(){
@@ -253,11 +224,11 @@ ipcRenderer.on('request_save_data', (event, filePath) => {
 });
 
 ipcRenderer.on('undo', (event) => {
-    undoStore.undo();
+    studentList = undoStore.undo();
 });
 
 ipcRenderer.on('redo', (event) => {
-    undoStore.redo();
+    studentList = undoStore.redo();
 });
 
 function sortByFirst(elem){
