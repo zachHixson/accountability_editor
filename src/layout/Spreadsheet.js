@@ -153,16 +153,16 @@ function deleteRow(event){
 }
 
 function insertStudent(student = new Student()){
-    undoStore.commit('insert', studentList);
-    studentList.push(data.student);
+    undoStore.commit('insert', JSON.parse(JSON.stringify(studentList)));
+    studentList.push(student);
     refreshList(studentList);
     saveTemp();
 }
 
 function deleteStudent(id){
-    undoStore.commit('delete', studentList);
+    undoStore.commit('delete', JSON.parse(JSON.stringify(studentList)));
     studentList.map((student, idx) => {
-        if (student.id == data.id){
+        if (student.id == id){
             studentList.splice(idx, 1);
         }
     });
@@ -171,8 +171,8 @@ function deleteStudent(id){
 }
 
 function updateStudent(id, fName, lName, info){
-    let modStudent = studentList.filter(student => student.id == data.id)[0];
-    undoStore.commit('update', studentList);
+    let modStudent = studentList.filter(student => student.id == id)[0];
+    undoStore.commit('update', JSON.parse(JSON.stringify(studentList)));
 
     if (fName != null && fName.length > 0){
         modStudent.fName = fName;
@@ -191,7 +191,6 @@ function updateStudent(id, fName, lName, info){
 }
 
 function saveTemp(){
-    return;
     fs.writeFile(tempPath, JSON.stringify(listOutput()), (err) => {
         if (err){
             console.log(err);
@@ -224,11 +223,23 @@ ipcRenderer.on('request_save_data', (event, filePath) => {
 });
 
 ipcRenderer.on('undo', (event) => {
-    studentList = undoStore.undo();
+    let undoState = undoStore.undo();
+
+    if (undoState != null){
+        studentList = undoState;
+        refreshList(studentList);
+        saveTemp();
+    }
 });
 
 ipcRenderer.on('redo', (event) => {
-    studentList = undoStore.redo();
+    let redoState = undoStore.redo();
+
+    if (redoState != null){
+        studentList = redoState;
+        refreshList(studentList);
+        saveTemp();
+    }
 });
 
 function sortByFirst(elem){
