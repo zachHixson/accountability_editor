@@ -3,18 +3,23 @@ const path = require('path');
 const remote = require('electron').remote;
 const {ipcRenderer} = require('electron');
 const app = remote.app;
+const UndoStore = require('./undo_store.js');
+const IDGenerator = require('./idGenerator.js');
 
 const START_ROW = 2;
 
 let tempPath = path.join(app.getPath("appData"), "accountability_editor/tempSave.json");
 let studentList = [];
+let undoStore = new UndoStore();
+let idGenerator = new IDGenerator();
 
 class Student {
-    constructor(fName = '', lName = '', info = '', id = 0){
+    constructor(fName = '', lName = '', info = ''){
         this.fName = fName;
         this.lName = lName;
         this.info = info;
-        this.id = id;
+        this.id = idGenerator.newID();
+        this.rowID = null;
     }
 
     getOutput(){
@@ -26,7 +31,7 @@ class Student {
     }
 }
 
-function createSpreadsheet(){
+function init(){
     readTempList()
 }
 
@@ -81,9 +86,8 @@ function refreshList(nameList){
             nameList[i].id
         );
         table.appendChild(row);
+        nameList[i].rowID = i;
     }
-
-    assignRowIds();
 }
 
 function createRow(fName = "", lName = "", info = "", id = 0){
@@ -105,27 +109,28 @@ function createRow(fName = "", lName = "", info = "", id = 0){
     lNameCell.className = "nameField";
     deleteCell.className = "delete_cell";
 
-    newRow.setAttribute("studentRowID", id);
-    fNameInp.setAttribute("studentRowID", id);
-    lNameInp.setAttribute("studentRowID", id);
-    infoInp.setAttribute("studentRowID", id);
+    newRow.setAttribute("studentID", id);
+    fNameInp.setAttribute("studentID", id);
+    lNameInp.setAttribute("studentID", id);
+    infoInp.setAttribute("studentID", id);
 
-    fNameInp.addEventListener("input", (event) => {
+    fNameInp.addEventListener("change", (event) => {
         let elem = event.path[0];
-        let id = elem.getAttribute("studentRowID");
-        studentList[id].fName = elem.value;
+        let id = elem.getAttribute("studentID");
+        updateStudent(id, elem.value, null, null);
         saveTemp();
     });
-    lNameInp.addEventListener("input", (event) => {
+    lNameInp.addEventListener("change", (event) => {
         let elem = event.path[0];
-        let id = elem.getAttribute("studentRowID");
-        studentList[id].lName = elem.value;
+        let id = elem.getAttribute("studentID");
+        updateStudent(id, null, elem.value, null);
         saveTemp();
     });
-    infoInp.addEventListener("input", (event) => {
+    infoInp.addEventListener("change", (event) => {
         let elem = event.path[0];
-        let id = elem.getAttribute("studentRowID");
-        studentList[id].info = elem.value;
+        let id = elem.getAttribute("studentID");
+        let student = studentList.filter(student => student.id == id);
+        updateStudent(id, elem.value);
         saveTemp();
     });
     deleteCell.addEventListener("click", deleteRow);
@@ -137,33 +142,85 @@ function createRow(fName = "", lName = "", info = "", id = 0){
     return newRow;
 }
 
-function assignRowIds(){
-    let table = document.getElementById("studentList");
-
-    for (let i = START_ROW; i < table.rows.length; i++){
-        table.rows[i].setAttribute("rowID", i);
-    }
-}
-
 function insertRow(event){
-    let table = document.getElementById("studentList");
-    studentList.push(new Student());
-    refreshList(studentList);
-    assignRowIds();
-    saveTemp();
+    insertStudent();
 }
 
 function deleteRow(event){
     let row = event.path[1]
-    let rowID = row.getAttribute("rowID");
-    let studentRowID = row.getAttribute("studentRowID");
-    document.getElementById("studentList").deleteRow(rowID);
-    studentList.splice(studentRowID, 1);
-    assignRowIds();
+    let studentID = row.getAttribute("studentID");
+    deleteStudent(studentID);
+}
+
+function insertStudent(student = new Student()){
+    undoStore.commit(
+        'insert',
+        {student},
+        (data) => {
+            studentList.push(data.student);
+        },
+        (data) => {
+            deleteStudent(data.student.id);
+        }
+    );
+    refreshList(studentList);
     saveTemp();
 }
 
+function deleteStudent(id){
+    undoStore.commit(
+        'delete',
+        {id, curStudent: studentList.filter(student => student.id == id)[0]},
+        (data) => {
+            studentList.map((student, idx) => {
+                if (student.id == data.id){
+                    studentList.splice(idx, 1);
+                }
+            });
+        },
+        (data) => {
+            console.log(data.curStudent)
+            insertStudent(data.curStudent);
+        }
+    );
+    refreshList(studentList);
+    saveTemp();
+}
+
+function updateStudent(id, fName, lName, info){
+    undoStore.commit(
+        'update',
+        {
+            id,
+            oldStudent: studentList.filter(student => student.id == id)[0],
+            fName, lName, info
+        },
+        (data) => {
+            let modStudent = studentList.filter(student => student.id == data.id)[0];
+
+            if (fName != null && fName.length > 0){
+                modStudent.fName = fName;
+            }
+
+            if (lName != null && lName.length > 0){
+                modStudent.lName = lName;
+            }
+
+            if (info != null && info.length > 0){
+                modStudent.info = info;
+            }
+        },
+        (data) => {
+            let modStudent = studentList.filter(student => student.id == data.id)[0];
+            modStudent.fName = data.oldStudent.fName;
+            modStudent.lName = data.oldStudent.lName;
+            modStudent.info = data.oldStudent.info;
+        }
+    );
+}
+
 function saveTemp(){
+    return;
     fs.writeFile(tempPath, JSON.stringify(listOutput()), (err) => {
         if (err){
             console.log(err);
@@ -193,6 +250,14 @@ ipcRenderer.on('request_save_data', (event, filePath) => {
         filePath,
         containsEmpty: (emptyNames.length > 0)
     })
+});
+
+ipcRenderer.on('undo', (event) => {
+    undoStore.undo();
+});
+
+ipcRenderer.on('redo', (event) => {
+    undoStore.redo();
 });
 
 function sortByFirst(elem){
@@ -269,10 +334,6 @@ function sort(elem, conditionFunc){
     else{
         curIndicator.innerHTML = "⯆";
         curIndicator.setAttribute("sortOrder", "desc");
-    }
-
-    for (let i = 0; i < studentList.length; i++){
-        studentList[i].id = i;
     }
 
     refreshList(studentList);

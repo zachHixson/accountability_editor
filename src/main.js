@@ -47,6 +47,25 @@ app.on('ready', function(){
             ]
         },
         {
+            label: 'Edit',
+            submenu: [
+                {
+                    label: 'Undo',
+                    accelerator: "CmdOrCtrl + Z",
+                    click(){
+                        mainWindow.send('undo');
+                    }
+                },
+                {
+                    label: 'Redo',
+                    accelerator: "CmdOrCtrl + R",
+                    click(){
+                        mainWindow.send('redo');
+                    }
+                }
+            ]
+        },
+        {
             label: 'debug',
             submenu: [
                 {
