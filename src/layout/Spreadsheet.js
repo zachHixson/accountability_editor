@@ -291,6 +291,7 @@ function clearSearch(){
 }
 
 ipcRenderer.on('new_roster', (event) => {
+    undoStore.commit('new_roster', JSON.parse(JSON.stringify(studentList)));
     studentList = [];
     refreshList(studentList);
 })
@@ -299,6 +300,7 @@ ipcRenderer.on('new_roster_opened', (event, data) => {
     loadJsonList(data)
     refreshList(studentList);
     saveTemp();
+    undoStore.clear();
 });
 
 ipcRenderer.on('request_save_data', (event, filePath) => {

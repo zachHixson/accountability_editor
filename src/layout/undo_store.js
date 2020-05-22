@@ -33,6 +33,11 @@ class UndoStore{
 
         return null;
     }
+
+    clear(){
+        this.history = [];
+        this.redoHistory = [];
+    }
 }
 
 module.exports = UndoStore;
