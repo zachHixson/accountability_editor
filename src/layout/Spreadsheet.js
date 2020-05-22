@@ -181,6 +181,8 @@ function saveTemp(){
             console.log(err);
             return;
         }
+
+        ipcRenderer.send('changed');
     })
 }
 

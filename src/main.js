@@ -8,6 +8,7 @@ const path = require('path');
 
 const {app, BrowserWindow, Menu, dialog, ipcMain, nativeImage} = electron;
 
+let unsavedChanges = false;
 let mainWindow;
 let top_menu = [
     {
@@ -139,8 +140,24 @@ function openRosterDialog(){
                 console.log(err);
                 return;
             }
-
-            mainWindow.send("new_roster_opened", data);
+            
+            if (unsavedChanges){
+                dialog.showMessageBox({
+                    noLink: true,
+                    buttons: ["Open", "Cancel"],
+                    message: "Warning: There are unsaved changes in this document. Any usaved changes will be lost"
+                }, (responses) => {
+                    if (responses == 0){
+                        mainWindow.send("new_roster_opened", data);
+                        unsavedChanges = false;
+                    }
+                })
+            }
+            else{
+                mainWindow.send("new_roster_opened", data);
+                unsavedChanges = false;
+            }
+            
         });
     })
     .catch((err) => console.log(err));
@@ -152,6 +169,16 @@ function openSaveDialog(){
         if (!data.canceled){
             mainWindow.send("request_save_data", data.filePath);
         }
+    });
+}
+
+async function saveFile(filePath, contents){
+    fs.writeFile(filePath, contents, (err) => {
+        if (err){
+            console.log(err);
+        }
+
+        unsavedChanges = false;
     });
 }
 
@@ -174,23 +201,19 @@ ipcMain.on('save_file', (event, data) => {
             }
 
             if (save){
-                fs.writeFile(data.filePath, data.contents, (err) => {
-                    if (err){
-                        console.log(err);
-                    }
-                });
+                saveFile(data.filePath, data.contents);
             }
         });
     }
     else{
-        fs.writeFile(data.filePath, data.contents, (err) => {
-            if (err){
-                console.log(err);
-            }
-        });
+        saveFile(data.filePath, data.contents);
     }
 })
 
 ipcMain.on('append_students', (event, data) => {
     mainWindow.send('append_students', data);
+})
+
+ipcMain.on('changed', (event) => {
+    unsavedChanges = true;
 })
