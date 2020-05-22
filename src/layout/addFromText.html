@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="addFromText.js"></script>
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="addFromText.css">
+    </head>
+    
+    <body>
+        <div class="heading">
+            Paste text list in box below
+        </div>
+        <div class="info">
+            Each name should be separated by newline <br /><br />
+            EX: <br />
+            &nbsp;&nbsp;Joe Shmoe <br />
+            &nbsp;&nbsp;Sally Seashells <br />
+            &nbsp;&nbsp;Billy Bobby
+        </div>
+        <div class="textAreaWrapper">
+            <textarea id="nameList" ></textarea>
+        </div>
+        <div class="buttonContainer">
+            <button onclick="addNames();">Add</button>
+            <button onclick="closeWindow()">Cancel</button>
+        </div>
+        <div class="checkboxContainer">
+            <input type="checkbox" id="lNameFirst" name="lNameFirst">
+            <label for="lNameFirst">Last Name First</label>
+        </div>
+    </body>
+</html>

@@ -9,74 +9,81 @@ const path = require('path');
 const {app, BrowserWindow, Menu, dialog, ipcMain, nativeImage} = electron;
 
 let mainWindow;
+let top_menu = [
+    {
+        label: 'File',
+        submenu: [
+            {
+                label:"New",
+                accelerator: "CmdOrCtrl + N",
+                click(){
+                    clearRosterDialog();
+                }
+            },
+            {
+                label:"Open",
+                accelerator: "CmdOrCtrl + O",
+                click(){
+                    openRosterDialog();
+                }
+            },
+            {
+                label:"Save",
+                accelerator: "CmdOrCtrl + S",
+                click() {
+                    openSaveDialog();
+                }
+            },
+            {
+                label:"Quit",
+                accelerator: "CmdOrCtrl + Q",
+                click(){
+                    app.quit();
+                }
+            }
+        ]
+    },
+    {
+        label: 'Edit',
+        submenu: [
+            {
+                label: 'Undo',
+                accelerator: "CmdOrCtrl + Z",
+                click(){
+                    mainWindow.send('undo');
+                }
+            },
+            {
+                label: 'Redo',
+                accelerator: "CmdOrCtrl + R",
+                click(){
+                    mainWindow.send('redo');
+                }
+            },
+            {
+                label: 'Add from text List',
+                click() {
+                    openAddFromTextWindow()
+                }
+            }
+        ]
+    },
+    {
+        label: 'debug',
+        submenu: [
+            {
+                label: "Open console",
+                click() {
+                    mainWindow.webContents.openDevTools();
+                }
+            }
+        ]
+    }
+];
 
 app.on('ready', function(){
     let image = nativeImage.createFromPath(__dirname + '/img/logo_no-outline.png');
-    let menu = Menu.buildFromTemplate([
-        {
-            label: 'File',
-            submenu: [
-                {
-                    label:"New",
-                    accelerator: "CmdOrCtrl + N",
-                    click(){
-                        clearRosterDialog();
-                    }
-                },
-                {
-                    label:"Open",
-                    accelerator: "CmdOrCtrl + O",
-                    click(){
-                        openRosterDialog();
-                    }
-                },
-                {
-                    label:"Save",
-                    accelerator: "CmdOrCtrl + S",
-                    click() {
-                        openSaveDialog();
-                    }
-                },
-                {
-                    label:"Quit",
-                    accelerator: "CmdOrCtrl + Q",
-                    click(){
-                        app.quit();
-                    }
-                }
-            ]
-        },
-        {
-            label: 'Edit',
-            submenu: [
-                {
-                    label: 'Undo',
-                    accelerator: "CmdOrCtrl + Z",
-                    click(){
-                        mainWindow.send('undo');
-                    }
-                },
-                {
-                    label: 'Redo',
-                    accelerator: "CmdOrCtrl + R",
-                    click(){
-                        mainWindow.send('redo');
-                    }
-                }
-            ]
-        },
-        {
-            label: 'debug',
-            submenu: [
-                {
-                    label: "Open console",
-                    click() {
-                        mainWindow.webContents.openDevTools();
-                    }
-                }
-            ]
-        }
-    ]);
+    let menu = Menu.buildFromTemplate(top_menu);
 
     Menu.setApplicationMenu(menu);
     image.setTemplateImage(true);
@@ -94,6 +101,21 @@ app.on('ready', function(){
     });
 })
 
+function openAddFromTextWindow(){
+    let addWindow = new BrowserWindow({
+        width: 400,
+        height: 500,
+        parent: mainWindow,
+        modal: true,
+        title: "Add students from text list",
+        webPreferences: {
+            nodeIntegration: true
+        }
+    });
+    addWindow.loadFile(path.join(__dirname, '/layout/addFromText.html'));
+    addWindow.setMenu(null);
+}
+
 function clearRosterDialog(){
     let response = dialog.showMessageBox({
         noLink: true,
@@ -102,7 +124,6 @@ function clearRosterDialog(){
     }, (responses) => {
         if (responses == 0){
             mainWindow.send("new_roster");
-            console.log("event");
         }
     });
 }
@@ -168,4 +189,8 @@ ipcMain.on('save_file', (event, data) => {
             }
         });
     }
+})
+
+ipcMain.on('append_students', (event, data) => {
+    mainWindow.send('append_students', data);
 })

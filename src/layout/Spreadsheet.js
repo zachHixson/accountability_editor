@@ -3,6 +3,7 @@ const path = require('path');
 const remote = require('electron').remote;
 const {ipcRenderer} = require('electron');
 const app = remote.app;
+const Student = require('./student.js');
 const UndoStore = require('./undo_store.js');
 const IDGenerator = require('./idGenerator.js');
 
@@ -12,24 +13,6 @@ let tempPath = path.join(app.getPath("appData"), "accountability_editor/tempSave
 let studentList = [];
 let undoStore = new UndoStore();
 let idGenerator = new IDGenerator();
-
-class Student {
-    constructor(fName = '', lName = '', info = ''){
-        this.fName = fName;
-        this.lName = lName;
-        this.info = info;
-        this.id = idGenerator.newID();
-        this.rowID = null;
-    }
-
-    getOutput(){
-        return {
-            fName : this.fName,
-            lName : this.lName,
-            allergies: this.info
-        }
-    }
-}
 
 function init(){
     readTempList()
@@ -56,7 +39,7 @@ function loadJsonList(json){
             inputList[i].fName,
             inputList[i].lName,
             inputList[i].allergies,
-            i
+            idGenerator.newID()
         ));
     }
 }
@@ -201,49 +184,6 @@ function saveTemp(){
     })
 }
 
-ipcRenderer.on('new_roster', (event) => {
-    studentList = [];
-    refreshList(studentList);
-})
-
-ipcRenderer.on('new_roster_opened', (event, data) => {
-    loadJsonList(data)
-    refreshList(studentList);
-    saveTemp();
-});
-
-ipcRenderer.on('request_save_data', (event, filePath) => {
-    let saveList = listOutput();
-    let stringList = JSON.stringify(saveList);
-    let emptyNames = saveList.filter(student => student.fName.trim().length <= 0 || student.lName.trim().length <= 0);
-
-    ipcRenderer.send('save_file', {
-        contents: stringList,
-        filePath,
-        containsEmpty: (emptyNames.length > 0)
-    })
-});
-
-ipcRenderer.on('undo', (event) => {
-    let undoState = undoStore.undo();
-
-    if (undoState != null){
-        studentList = undoState;
-        refreshList(studentList);
-        saveTemp();
-    }
-});
-
-ipcRenderer.on('redo', (event) => {
-    let redoState = undoStore.redo();
-
-    if (redoState != null){
-        studentList = redoState;
-        refreshList(studentList);
-        saveTemp();
-    }
-});
-
 function sortByFirst(elem){
     sort(elem, (a, b) => {
         aFname = a.fName.toUpperCase();
@@ -349,3 +289,58 @@ function clearSearch(){
     document.getElementById("searchBox").value = "";
     updateSearch();
 }
+
+ipcRenderer.on('new_roster', (event) => {
+    studentList = [];
+    refreshList(studentList);
+})
+
+ipcRenderer.on('new_roster_opened', (event, data) => {
+    loadJsonList(data)
+    refreshList(studentList);
+    saveTemp();
+});
+
+ipcRenderer.on('request_save_data', (event, filePath) => {
+    let saveList = listOutput();
+    let stringList = JSON.stringify(saveList);
+    let emptyNames = saveList.filter(student => student.fName.trim().length <= 0 || student.lName.trim().length <= 0);
+
+    ipcRenderer.send('save_file', {
+        contents: stringList,
+        filePath,
+        containsEmpty: (emptyNames.length > 0)
+    })
+});
+
+ipcRenderer.on('undo', (event) => {
+    let undoState = undoStore.undo();
+
+    if (undoState != null){
+        studentList = undoState;
+        refreshList(studentList);
+        saveTemp();
+    }
+});
+
+ipcRenderer.on('redo', (event) => {
+    let redoState = undoStore.redo();
+
+    if (redoState != null){
+        studentList = redoState;
+        refreshList(studentList);
+        saveTemp();
+    }
+});
+
+ipcRenderer.on('append_students', (event, data) => {
+    data.map((student) => {
+        student.id = idGenerator.newID();
+        studentList.push(new Student(
+            student.fName,
+            student.lName
+        ));
+    });
+    refreshList(studentList);
+    saveTemp();
+})
