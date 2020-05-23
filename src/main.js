@@ -70,6 +70,17 @@ let top_menu = [
         ]
     },
     {
+        label: 'Export',
+        submenu: [
+            {
+                label: 'Print table',
+                click() {
+                    openPrintTableOptions();
+                }
+            }
+        ]
+    },
+    {
         label: 'debug',
         submenu: [
             {
@@ -115,6 +126,22 @@ function openAddFromTextWindow(){
     });
     addWindow.loadFile(path.join(__dirname, '/layout/addFromText.html'));
     addWindow.setMenu(null);
+}
+
+function openPrintTableOptions(){
+    let printTableWindow = new BrowserWindow({
+        width: 500,
+        height: 400,
+        parent: mainWindow,
+        modal: true,
+        title: "Print table settings",
+        webPreferences: {
+            nodeIntegration: true
+        }
+    });
+    printTableWindow.webContents.openDevTools();
+    printTableWindow.loadFile(path.join(__dirname, '/layout/printTableOptions.html'));
+    printTableWindow.setMenu(null);
 }
 
 function clearRosterDialog(){

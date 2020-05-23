@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf8" />
+        <link rel="stylesheet" href="main.css">
+        <script src="./printTableOptions.js"></script>
+        <style>
+            #properties{
+                box-sizing: border-box;
+                width: 50%;
+                margin: 3px;
+                float: left;
+            }
+
+            #properties *{
+                margin-bottom: 5px;
+            }
+            
+            #title{
+                width: 100%;
+            }
+
+            .heading{
+                width: 100%;
+                background: var(--highlight-color);
+                text-align: center;
+                padding: 5px;
+                margin-bottom: 5px;
+                box-sizing: border-box;
+            }
+
+            .numValues{
+                box-sizing: content-box;
+                display: grid;
+                width: 100%;
+                grid-template-areas: 
+                    'label number'
+                    'label number';
+            }
+
+            input[type="text"]{
+                box-sizing: border-box;
+                padding: 5px;
+            }
+
+            input[type="number"]{
+                width: 100%;
+                text-align: right;
+            }
+
+            #colorPicker{
+                float: right;
+                padding: 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="heading">Set Print Options</div>
+        <div id="properties">
+            <input type="text" id="title" placeholder="Title" /> <br />
+            <div class="numValues">
+                <label for="rows">Rows: </label><input type="number" id="rows" value="10" />
+                <label for="cols">Cols: </label><input type="number" id="cols" value="10" />
+            </div>
+            <div class="sortBy">
+                Sort By:<br />
+                <input type="radio" id="fName" name="sortByRadio" /><label for="fName">First Name</label><br />
+                <input type="radio" id="lName" name="sortByRadio" checked/><label for="lName">Last Name</label><br />
+            </div>
+        </div>
+        <div id="colorPicker"></div>
+    </body>
+</html>

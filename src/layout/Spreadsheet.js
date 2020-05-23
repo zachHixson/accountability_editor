@@ -90,6 +90,10 @@ function createRow(fName = "", lName = "", info = "", id = 0){
     infoInp.value = info;
     deleteCell.innerHTML = "X";
 
+    fNameInp.type = "text";
+    lNameInp.type = "text";
+    infoInp.type = "text";
+
     fNameCell.className = "nameField";
     lNameCell.className = "nameField";
     deleteCell.className = "delete_cell";

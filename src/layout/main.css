@@ -32,14 +32,14 @@
     border-right: none;
 }
 
-#studentList input{
+#studentList input[type="text"]{
     box-sizing: border-box;
     font-size:  medium;
     height: 2em;
     padding: 2px;
 }
 
-#studentList input:focus{
+#studentList input[type="text"]:focus{
     background: var(--selected);
 }
 
@@ -47,7 +47,7 @@
     width:25%;
 }
 
-input{
+input[type="text"]{
     width:100%;
     height: 100%;
     border: 1px solid gray;

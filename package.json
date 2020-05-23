@@ -7,12 +7,13 @@
     "type": "git",
     "url": "https://zachThePerson@bitbucket.org/zachThePerson/accountability_editor.git"
   },
-    "scripts": {
+  "scripts": {
     "start": "electron ."
   },
   "author": "Zach \"Hixxy\" Hixson",
   "license": "MIT",
   "dependencies": {
+    "@jaames/iro": "^5.1.8",
     "electron": "^6.0.1"
   },
   "devDependencies": {
