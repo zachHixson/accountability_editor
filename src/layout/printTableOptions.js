@@ -18,7 +18,10 @@ let colorWheel = new iro.ColorPicker("#colorPicker", {
     width: 150
 });
 
-ipcRenderer.on('update-list-count', (event, data) => {
-    listCount = data;
-    console.log(listCount);
+ipcRenderer.on('update-list-count', (event, numStudents) => {
+    let rows = parseInt(document.getElementById('rows').value);
+    let cols = parseInt(document.getElementById('cols').value);
+    let neededRows = Math.ceil(numStudents / cols);
+    document.getElementById('rows').value = neededRows;
+    listCount = numStudents;
 })

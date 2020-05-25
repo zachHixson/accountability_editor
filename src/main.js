@@ -9,7 +9,7 @@ const path = require('path');
 const {app, BrowserWindow, Menu, dialog, ipcMain, nativeImage} = electron;
 
 let unsavedChanges = false;
-let currentLength = 0;
+let studentList = [];
 let mainWindow;
 let top_menu = [
     {
@@ -144,7 +144,7 @@ function openPrintTableOptions(){
     printTableWindow.loadFile(path.join(__dirname, '/layout/printTableOptions.html'));
     printTableWindow.setMenu(null);
     printTableWindow.webContents.once('dom-ready', () => {
-        printTableWindow.send('update-list-count', currentLength);
+        printTableWindow.send('update-list-count', studentList.length);
     });
 }
 
@@ -247,4 +247,8 @@ ipcMain.on('append_students', (event, data) => {
 
 ipcMain.on('changed', (event) => {
     unsavedChanges = true;
+})
+
+ipcMain.on('send-student-list', (event, data) => {
+    studentList = data.studentList;
 })

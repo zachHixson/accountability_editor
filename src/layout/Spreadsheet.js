@@ -73,6 +73,7 @@ function refreshList(nameList){
     }
 
     document.getElementById("studentCount").innerHTML = studentList.length;
+    ipcRenderer.send('send-student-list', {studentList});
 }
 
 function createRow(fName = "", lName = "", info = "", id = 0){
