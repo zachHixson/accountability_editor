@@ -11,6 +11,7 @@
                 width: 50%;
                 margin: 3px;
                 float: left;
+                height: 100%;
             }
 
             #properties *{
@@ -50,8 +51,16 @@
             }
 
             #colorPicker{
-                float: right;
-                padding: 20px;
+                position:absolute;
+                right: 0px;
+                padding-right: 20px;
+            }
+
+            #buttons{
+                position: absolute;
+                bottom: 0px;
+                right: 0px;
+                margin: 5px;
             }
         </style>
     </head>
@@ -70,6 +79,11 @@
                 <input type="radio" id="lName" name="sortByRadio" checked/><label for="lName">Last Name</label><br />
             </div>
         </div>
-        <div id="colorPicker"></div>
+        <div id="colorPicker">Heading color:</div>
+        <br />
+        <div id="buttons">
+            <input type="button" value="Print" />
+            <input type="button" value="Close" />
+        </div>
     </body>
 </html>

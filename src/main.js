@@ -9,6 +9,7 @@ const path = require('path');
 const {app, BrowserWindow, Menu, dialog, ipcMain, nativeImage} = electron;
 
 let unsavedChanges = false;
+let currentLength = 0;
 let mainWindow;
 let top_menu = [
     {
@@ -131,7 +132,7 @@ function openAddFromTextWindow(){
 function openPrintTableOptions(){
     let printTableWindow = new BrowserWindow({
         width: 500,
-        height: 400,
+        height: 320,
         parent: mainWindow,
         modal: true,
         title: "Print table settings",
@@ -142,6 +143,9 @@ function openPrintTableOptions(){
     printTableWindow.webContents.openDevTools();
     printTableWindow.loadFile(path.join(__dirname, '/layout/printTableOptions.html'));
     printTableWindow.setMenu(null);
+    printTableWindow.webContents.once('dom-ready', () => {
+        printTableWindow.send('update-list-count', currentLength);
+    });
 }
 
 function clearRosterDialog(){
