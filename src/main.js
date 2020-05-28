@@ -5,6 +5,7 @@ Main JS File
 const electron = require('electron');
 const fs = require('fs');
 const path = require('path');
+const pjson = require('../package.json');
 
 const {app, BrowserWindow, Menu, dialog, ipcMain, nativeImage} = electron;
 
@@ -84,12 +85,12 @@ let top_menu = [
         ]
     },
     {
-        label: 'debug',
+        label: 'Help',
         submenu: [
             {
-                label: "Open console",
-                click() {
-                    mainWindow.webContents.openDevTools();
+                label: 'About',
+                click(){
+                    openAboutWindow();
                 }
             }
         ]
@@ -147,6 +148,25 @@ function openPrintTableOptions(){
     printTableWindow.setMenu(null);
     printTableWindow.webContents.once('dom-ready', () => {
         printTableWindow.send('update-list-count', studentList.length);
+    });
+}
+
+function openAboutWindow(){
+    let aboutWindow = new BrowserWindow({
+        width: 400,
+        height: 200,
+        parent: mainWindow,
+        modal: true,
+        title: "About",
+        icon: appIcon,
+        webPreferences: {
+            nodeIntegration: true
+        }
+    });
+    aboutWindow.loadFile(path.join(__dirname, '/layout/about.html'));
+    aboutWindow.setMenu(null);
+    aboutWindow.webContents.once('dom-ready', () => {
+        aboutWindow.send('update-version-number', pjson.version);
     });
 }
 
