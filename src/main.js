@@ -11,6 +11,7 @@ const {app, BrowserWindow, Menu, dialog, ipcMain, nativeImage} = electron;
 let unsavedChanges = false;
 let studentList = [];
 let mainWindow;
+let appIcon = nativeImage.createFromPath(__dirname + '/img/logo_no-outline.png');
 let top_menu = [
     {
         label: 'File',
@@ -95,17 +96,16 @@ let top_menu = [
 ];
 
 app.on('ready', function(){
-    let image = nativeImage.createFromPath(__dirname + '/img/logo_no-outline.png');
     let menu = Menu.buildFromTemplate(top_menu);
 
     Menu.setApplicationMenu(menu);
-    image.setTemplateImage(true);
+    appIcon.setTemplateImage(true);
 
     mainWindow = new BrowserWindow({
         webPreferences: {
             nodeIntegration: true
         },
-        icon: image
+        icon: appIcon
     })
     mainWindow.loadFile("./src/layout/main.html");
 
@@ -121,6 +121,7 @@ function openAddFromTextWindow(){
         parent: mainWindow,
         modal: true,
         title: "Add students from text list",
+        icon: appIcon,
         webPreferences: {
             nodeIntegration: true
         }
@@ -136,11 +137,11 @@ function openPrintTableOptions(){
         parent: mainWindow,
         modal: true,
         title: "Print table settings",
+        icon: appIcon,
         webPreferences: {
             nodeIntegration: true
         }
     });
-    printTableWindow.webContents.openDevTools();
     printTableWindow.loadFile(path.join(__dirname, '/layout/printTableOptions.html'));
     printTableWindow.setMenu(null);
     printTableWindow.webContents.once('dom-ready', () => {
@@ -251,4 +252,24 @@ ipcMain.on('changed', (event) => {
 
 ipcMain.on('send-student-list', (event, data) => {
     studentList = data.studentList;
+})
+
+ipcMain.on('print-table', (event, data) => {
+    let printWindow = new BrowserWindow({
+        width: 500,
+        height: 386,
+        parent: mainWindow,
+        modal: true,
+        title: "Print Preview",
+        icon: appIcon,
+        webPreferences: {
+            nodeIntegration: true
+        }
+    });
+    printWindow.webContents.openDevTools();
+    printWindow.loadFile(path.join(__dirname, '/layout/printTable.html'));
+    printWindow.setMenu(null);
+    printWindow.webContents.once('dom-ready', () => {
+        printWindow.send('update-data', {studentList, settings:data});
+    });
 })
