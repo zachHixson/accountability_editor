@@ -1,5 +1,5 @@
 const iro = require('@jaames/iro');
-const {ipcRenderer} = require('electron');
+const {ipcRenderer, dialog} = require('electron');
 const remote = require('electron').remote;
 
 let listCount = 0;
@@ -36,10 +36,27 @@ function closeWindow(){
     window.close();
 }
 
-ipcRenderer.on('update-list-count', (event, numStudents) => {
+function fixCols(){
     let rows = parseInt(document.getElementById('rows').value);
     let cols = parseInt(document.getElementById('cols').value);
-    let neededRows = Math.ceil(numStudents / cols);
-    document.getElementById('rows').value = neededRows;
+
+    if (rows * cols < listCount){
+        let neededCols = Math.ceil(listCount / rows);
+        document.getElementById('cols').value = neededCols;
+    }
+}
+
+function fixRows(){
+    let rows = parseInt(document.getElementById('rows').value);
+    let cols = parseInt(document.getElementById('cols').value);
+
+    if (rows * cols < listCount){
+        let neededRows = Math.ceil(listCount / cols);
+        document.getElementById('rows').value = neededRows;
+    }
+}
+
+ipcRenderer.on('update-list-count', (event, numStudents) => {
+    fixRows();
     listCount = numStudents;
 })

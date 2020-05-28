@@ -266,7 +266,6 @@ ipcMain.on('print-table', (event, data) => {
             nodeIntegration: true
         }
     });
-    printWindow.webContents.openDevTools();
     printWindow.loadFile(path.join(__dirname, '/layout/printTable.html'));
     printWindow.setMenu(null);
     printWindow.webContents.once('dom-ready', () => {
