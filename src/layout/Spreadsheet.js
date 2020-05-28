@@ -193,54 +193,29 @@ function saveTemp(){
 
 function sortByFirst(elem){
     sort(elem, (a, b) => {
-        aFname = a.fName.toUpperCase();
-        bFname = b.fName.toUpperCase();
-        aLname = a.lName.toUpperCase();
-        bLname = b.lName.toUpperCase();
+        let aFName = a.fName.toUpperCase();
+        let bFName = b.fName.toUpperCase();
 
-        if (aFname < bFname){
-            return -1;
-        }
-        else if (aFname > bFname){
-            return 1;
+        if (aFName == bFName){
+            return (a.lName.toUpperCase() < b.lName.toUpperCase()) ? -1 : 0;
         }
         else{
-            if (aLname < bLname){
-                return -1;
-            }
-            else if (aLname > bLname){
-                return 1;
-            }
-            else{
-                return 0;
-            }
+            return (aFName < bFName) ? -1 : 1;
         }
     });
 }
 
 function sortByLast(elem){
     sort(elem, (a, b) => {
-        aFname = a.fName.toUpperCase();
-        bFname = b.fName.toUpperCase();
-        aLname = a.lName.toUpperCase();
-        bLname = b.lName.toUpperCase();
+        let aLName = a.lName.toUpperCase();
+        let bLName = b.lName.toUpperCase();
 
-        if (aLname < bLname){
-            return -1;
-        }
-        else if (aLname > bLname){
-            return 1;
+        if (aLName == bLName){
+            return (a.fName.toUpperCase() < b.fName.toUpperCase()) ? -1 : 0;
         }
         else{
-            if (aFname < bFname){
-                return -1;
-            }
-            else if (aFname > bFname){
-                return 1;
-            }
-            else{
-                return 0;
-            }
+            console.log(aLName + " | " + bLName)
+            return (aLName < bLName) ? -1 : 1;
         }
     });
 }
