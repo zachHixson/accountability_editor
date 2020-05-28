@@ -76,6 +76,7 @@ let top_menu = [
         submenu: [
             {
                 label: 'Print table',
+                accelerator: "CmdOrCtrl + P",
                 click() {
                     openPrintTableOptions();
                 }
