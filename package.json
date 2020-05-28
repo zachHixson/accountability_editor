@@ -8,7 +8,8 @@
     "url": "https://zachThePerson@bitbucket.org/zachThePerson/accountability_editor.git"
   },
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-packager . \"Accountability Editor\" --platform=win32 --arch=x64"
   },
   "author": "Zach \"Hixxy\" Hixson",
   "license": "MIT",
