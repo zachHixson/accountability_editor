@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager . \"Accountability Editor\" --platform=win32 --arch=x64"
+    "build": "electron-packager . \"Accountability Editor\" --platform=win32 --arch=x64 --icon=\"src/img/app_icon.ico\""
   },
   "author": "Zach \"Hixxy\" Hixson",
   "license": "MIT",
