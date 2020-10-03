@@ -133,7 +133,11 @@ function createRow(fName = "", lName = "", info = "", id = 0){
 }
 
 function insertRow(event){
-    insertStudent();
+    let newId = getHighestId(studentList) + 1;
+    let newStudent = new Student();
+
+    newStudent.id = newId;
+    insertStudent(newStudent);
 }
 
 function deleteRow(event){
@@ -158,6 +162,23 @@ function deleteStudent(id){
     });
     refreshList(studentList);
     saveTemp();
+}
+
+function getHighestId(list){
+    if (list.length > 0){
+        let highest = list[0].id;
+
+        for (let i = 1; i < list.length; i++){
+            if (list[i].id > highest){
+                highest = list[i].id;
+            }
+        }
+
+        return highest;
+    }
+    else{
+        return -1;
+    }
 }
 
 function updateStudent(id, fName, lName, info){
