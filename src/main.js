@@ -171,6 +171,7 @@ function openAboutWindow(){
 }
 
 function clearRosterDialog(){
+    console.log("Works?")
     let response = dialog.showMessageBox({
         noLink: true,
         buttons: ["New", "Cancel"],
