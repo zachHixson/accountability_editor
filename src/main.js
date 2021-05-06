@@ -239,14 +239,14 @@ ipcMain.on('save_file', (event, data) => {
     if (data.containsEmpty){
         let response = dialog.showMessageBox({
             noLink: true,
-            buttons: ["Save", "Remove Empty", "Cancel"],
-            message: "Warning: The list you are about to save contains student entries without first or last name. Do you want to continue?"
-        }, (responses) => {
+            buttons: ["Remove Empty", "Save", "Cancel"],
+            message: "Warning: The list you are about to save contains student entries without a first or last name. Would you like to remove these?"
+        }).then(({response}) => {
             let save = false;
-            if (responses == 0){
+            if (response == 0){
                 save = true;
             }
-            else if(responses == 1){
+            else if(response == 1){
                 let list = JSON.parse(data.contents);
                 let culledList = list.filter(student => student.fName.trim().length > 0 && student.lName.trim().length > 0);
                 data.contents = JSON.stringify(culledList);
