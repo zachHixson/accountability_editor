@@ -171,13 +171,12 @@ function openAboutWindow(){
 }
 
 function clearRosterDialog(){
-    console.log("Works?")
-    let response = dialog.showMessageBox({
+    let response = dialog.showMessageBox(null, {
         noLink: true,
         buttons: ["New", "Cancel"],
         message: "Warning: This will create a a new accountability list. All unsaved changes will be lost"
-    }, (responses) => {
-        if (responses == 0){
+    }).then(({response}) => {
+        if (response == 0){
             mainWindow.send("new_roster");
         }
     });
