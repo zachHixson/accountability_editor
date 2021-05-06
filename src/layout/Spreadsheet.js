@@ -235,7 +235,6 @@ function sortByLast(elem){
             return (a.fName.toUpperCase() < b.fName.toUpperCase()) ? -1 : 0;
         }
         else{
-            console.log(aLName + " | " + bLName)
             return (aLName < bLName) ? -1 : 1;
         }
     });
@@ -339,12 +338,11 @@ ipcRenderer.on('redo', (event) => {
 });
 
 ipcRenderer.on('append_students', (event, data) => {
-    data.map((student) => {
-        student.id = idGenerator.newID();
-        studentList.push(new Student(
-            student.fName,
-            student.lName
-        ));
+    data.forEach((student) => {
+        let newStudent = new Student();
+        Object.assign(newStudent, student);
+        newStudent.id = idGenerator.newID();
+        studentList.push(newStudent);
     });
     refreshList(studentList);
     saveTemp();

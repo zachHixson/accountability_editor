@@ -8,7 +8,7 @@ function addNames(){
     let lines = rawText.split('\n');
     let students = [];
 
-    lines.map((line) => {
+    lines.forEach((line) => {
         let trimmedLine = line.trim();
 
         if (trimmedLine.length > 0){
