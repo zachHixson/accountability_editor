@@ -1,6 +1,6 @@
 {
   "name": "accountability_editor",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Application to allow easy editing of AC Accountability rosters",
   "main": "src/main.js",
   "repository": {
