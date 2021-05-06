@@ -15,7 +15,7 @@ let undoStore = new UndoStore();
 let idGenerator = new IDGenerator();
 
 function init(){
-    readTempList()
+    readTempList();
 }
 
 function readTempList(){
@@ -26,7 +26,7 @@ function readTempList(){
         }
 
         loadJsonList(data)
-        refreshList(studentList);
+        rebuildList(studentList);
     })
 }
 
@@ -54,7 +54,7 @@ function listOutput(){
     return outList;
 }
 
-function refreshList(nameList){
+function rebuildList(nameList){
     let table = document.getElementById("studentList");
 
     while (table.rows.length > START_ROW){
@@ -149,7 +149,7 @@ function deleteRow(event){
 function insertStudent(student = new Student()){
     undoStore.commit('insert', JSON.parse(JSON.stringify(studentList)));
     studentList.push(student);
-    refreshList(studentList);
+    rebuildList(studentList);
     saveTemp();
 }
 
@@ -160,7 +160,7 @@ function deleteStudent(id){
             studentList.splice(idx, 1);
         }
     });
-    refreshList(studentList);
+    rebuildList(studentList);
     saveTemp();
 }
 
@@ -182,7 +182,7 @@ function getHighestId(list){
 }
 
 function updateStudent(id, fName, lName, info){
-    let modStudent = studentList.filter(student => student.id == id)[0];
+    let modStudent = studentList.find(student => student.id == id);
     undoStore.commit('update', JSON.parse(JSON.stringify(studentList)));
 
     if (fName != null && fName.length > 0){
@@ -197,7 +197,6 @@ function updateStudent(id, fName, lName, info){
         modStudent.info = info;
     }
 
-    refreshList(studentList);
     saveTemp();
 }
 
@@ -262,7 +261,7 @@ function sort(elem, conditionFunc){
         curIndicator.setAttribute("sortOrder", "desc");
     }
 
-    refreshList(studentList);
+    rebuildList(studentList);
 }
 
 function updateSearch(){
@@ -284,7 +283,7 @@ function updateSearch(){
         addBtn.hidden = false;
     }
     
-    refreshList(filteredList);
+    rebuildList(filteredList);
 }
 
 function clearSearch(){
@@ -295,12 +294,12 @@ function clearSearch(){
 ipcRenderer.on('new_roster', (event) => {
     undoStore.commit('new_roster', JSON.parse(JSON.stringify(studentList)));
     studentList = [];
-    refreshList(studentList);
+    rebuildList(studentList);
 })
 
 ipcRenderer.on('new_roster_opened', (event, data) => {
     loadJsonList(data)
-    refreshList(studentList);
+    rebuildList(studentList);
     saveTemp();
     undoStore.clear();
 });
@@ -322,7 +321,7 @@ ipcRenderer.on('undo', (event) => {
 
     if (undoState != null){
         studentList = undoState;
-        refreshList(studentList);
+        rebuildList(studentList);
         saveTemp();
     }
 });
@@ -332,7 +331,7 @@ ipcRenderer.on('redo', (event) => {
 
     if (redoState != null){
         studentList = redoState;
-        refreshList(studentList);
+        rebuildList(studentList);
         saveTemp();
     }
 });
@@ -344,6 +343,6 @@ ipcRenderer.on('append_students', (event, data) => {
         newStudent.id = idGenerator.newID();
         studentList.push(newStudent);
     });
-    refreshList(studentList);
+    rebuildList(studentList);
     saveTemp();
 })
