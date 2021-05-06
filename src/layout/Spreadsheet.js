@@ -155,7 +155,7 @@ function insertStudent(student = new Student()){
 
 function deleteStudent(id){
     undoStore.commit('delete', JSON.parse(JSON.stringify(studentList)));
-    studentList.map((student, idx) => {
+    studentList.forEach((student, idx) => {
         if (student.id == id){
             studentList.splice(idx, 1);
         }
